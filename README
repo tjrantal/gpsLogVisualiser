@@ -11,4 +11,4 @@ Obtain a google static maps api key, and save it to a file named 'mapsKey.txt' i
 
 Add some GPS log files into sampleData/gpsLog folder. I have included a sample file, which should show a route in the Melbourne Metropolitan area from Blackburn to Burwood.
 
-
+Uses GPL licensed code I downloaded from google Github and Lukasz Wiktor's <a href="https://github.com/LukaszWiktor/series-reducer">series-reducer library</a>, which is licensed with Apache 2.0 license for Ramer–Douglas–Peucker series reduction of the GPS coordinates. Those licensing terms apply to this derivative work.
