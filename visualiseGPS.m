@@ -10,7 +10,7 @@ interestingColumns = {'lat','lon'};	%Column headers for latitude and longitude, 
 dataPath = 'sampleData/gpsLog';
 savePath = 'mapFigs';
 keyFile = 'mapsKey.txt';
-mapsKey = fileread(keyFile);
+mapsKey = strtrim(fileread(keyFile));
 %Create folder for figures if required
 if ~exist(savePath,'dir')
 	mkdir(savePath)
