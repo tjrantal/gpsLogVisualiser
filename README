@@ -1,0 +1,14 @@
+An Octave/Matlab + java script to visualise a GPS logged track on a Google map using the <a href="https://developers.google.com/maps/documentation/static-maps/">Google Static Maps api</a>. I use it to visualise the logs I've recorded with my <a href="https://play.google.com/store/apps/details?id=timo.home.exercisepacer">Exercise Pacer</a> and <a href="https://play.google.com/store/apps/details?id=timo.home.gpsLog">GPS Logger</a> android apps.
+
+To use 
+
+Compile the java classes (requires <a href="http://www.oracle.com/technetwork/java/javase/">java SDK</a> );
+1) cd to java/src
+2) javac timo/home/polyencode/PolyEncode.java
+3) javac timo/home/seriesreducer/RDPReducer.java
+
+Obtain a google static maps api key, and save it to a file named 'mapsKey.txt' in the root folder of the project (i.e. the folder with visualiseGPS.m). Just follow the procedure outlined on the google static maps webpage to obtain one.
+
+Add some GPS log files into sampleData/gpsLog folder. I have included a sample file, which should show a route in the Melbourne Metropolitan area from Blackburn to Burwood.
+
+
