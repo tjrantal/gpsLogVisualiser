@@ -2,14 +2,14 @@ An Octave/Matlab + java script to visualise a GPS logged track on a Google map u
 
 To use 
 
-Compile the java classes (requires <a href="http://www.oracle.com/technetwork/java/javase/">java SDK</a> );
-1) cd to java/src
-2) javac timo/home/polyencode/PolyEncode.java
-3) javac timo/home/seriesreducer/RDPReducer.java
-4) javac timo/home/elevations/ElevationRequest.java
-
 Obtain a google static maps api key, and save it to a file named 'mapsKey.txt' in the root folder of the project (i.e. the folder with visualiseGPS.m). Just follow the procedure outlined on the google static maps webpage to obtain one.
 Obtain a google elevations api key, and save it to a file named 'elevationsKey.txt' in the root folder of the project (i.e. the folder with visualiseGPS.m). Just follow the procedure outlined on the google elevations api webpage to obtain one.
+
+Compile the java classes (requires <a href="http://www.oracle.com/technetwork/java/javase/">java SDK</a> );
+	1) install and configure ANT (http://ant.apache.org/, remember to add JAVA_HOME and ANT_HOME environment variables)
+	2) open command prompt cd into the folder with this README and type ant on the command line  (+ hit enter)
+		 should create a jar file in java/build
+		check build.xml if things go wrong
 
 
 Add some GPS log files into sampleData/gpsLog folder. I have included a sample file, which should show a route in the Melbourne Metropolitan area from Blackburn to Burwood. Will create a folder 'mapFigs' and save corresponding Google Static Maps as .png files.

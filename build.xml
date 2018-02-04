@@ -1,0 +1,27 @@
+<!-- bluetoothTest ANT build system -->
+<project name="GoogleMapsApiHelper" default="jar" basedir=".">
+  <description>
+    Ant build system for GoogleMapsApiHelper
+  </description>
+
+  <!-- set global properties for this build -->
+  <property environment="env"/>
+  <property name="JAVA_HOME" location="${env.JAVA_HOME}" />
+  <property name="javasrc" location="java/src/" />
+  <property name="build" location="java/build" />
+  <property name="classes" location="${build}/java" />
+  
+  <!-- Initialize -->
+  <target name="javacompile" description="Compile Java source" >
+	<mkdir dir="${classes}"/>
+	<javac source="1.6" target="1.6" srcdir="${javasrc}" destdir="${classes}" nowarn="on">
+	</javac>
+  </target>
+  
+  <!-- Create jar -->
+	<target name="jar" depends="javacompile" description="Create Jar file" >
+		<jar jarfile="${build}/GoogleMapsApiHelper.jar" basedir="${classes}"/>
+	</target>
+
+</project>
+

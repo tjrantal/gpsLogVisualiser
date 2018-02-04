@@ -10,7 +10,7 @@ clc;
 
 addpath('functions');
 addpath('functions/simplify');
-javaaddpath('java/src');
+javaaddpath('java/build/GoogleMapsApiHelper.jar');	%Java helper to interface with Google maps and elevations APIs
 interestingColumns = {'lat','lon'};	%Column headers for latitude and longitude, respectively
 dataPath = 'sampleData/gpsLog';	%reads logged coordinate data from this path
 savePath = 'mapFigs';		%Saves google static map figures here
@@ -48,8 +48,9 @@ for file = {fList(:).name}
 			elevationsArray = javaObject('timo.home.elevations.ElevationRequest',data.data(:,columnIndices(1)),data.data(:,columnIndices(2)),elevationsKey);
 			elevations = elevationsArray.getElevations();
 			resolution = elevationsArray.getResolution();
-			lat = elevationsArray.getLatitudes();
-			lon = elevationsArray.getLongitudes();
+			%lat = elevationsArray.getLatitudes();
+			%lon = elevationsArray.getLongitudes();
+			clear 'elevationsArray';
 			
 			%Write the elevations to a file
 			eleSaveName = [elevationsSavePath '/' strrep(file{1},'GPS_','ELE_')];
@@ -64,7 +65,7 @@ for file = {fList(:).name}
 				fprintf(fid,'\t%s',t{1});
 			end
 			fprintf(fid,'\n');
-			fclose(fid)
+			fclose(fid);
 			%write data to end of file
 			dlmwrite(eleSaveName,[data.data, elevations, resolution],'\t','-append');
 			
