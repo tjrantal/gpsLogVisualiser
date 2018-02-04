@@ -94,7 +94,7 @@ for file = {fList(:).name}
 			else
 				print('-dpng','-r200',[elevationsPath '/' strrep(file{1},'.txt','.png')]);			
 			end
-			close();
+			close(fh);
 			disp(['fetched ' file{1}]);
 		else
 			disp(['EXISTS ' file{1}]);
