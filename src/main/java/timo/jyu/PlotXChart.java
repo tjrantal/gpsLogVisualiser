@@ -28,6 +28,7 @@ public class PlotXChart{
 		chart = new XYChartBuilder().width(width).height(height).theme(ChartTheme.Matlab).title(chartTitle).xAxisTitle(xTitle).yAxisTitle(yTitle).build();
 		chart.getStyler().setPlotGridLinesVisible(false);
 		chart.getStyler().setXAxisTickMarkSpacingHint(100);
+		chart.getStyler().setLegendVisible(false);
 	}
 	
 	public void addSeries(String seriesName, double[] xData, double[] yData){

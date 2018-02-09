@@ -92,7 +92,6 @@ for file = {fList(:).name}
 			dlmwrite(eleSaveName,[data.data, elevations, resolution],'\t','-append');
 			
 			disp(['fetched ' file{1}]);
-			break;
 		else
 			disp(['EXISTS ' file{1}]);
 		end
