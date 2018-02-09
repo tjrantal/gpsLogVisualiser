@@ -1,4 +1,4 @@
-An Octave/Matlab + java script to visualise a GPS logged track on a Google map using the [Google Static Maps api](https://developers.google.com/maps/documentation/static-maps). I use it to visualise the logs I've recorded with my <a href="https://play.google.com/store/apps/details?id=timo.home.exercisepacer">Exercise Pacer</a> and <a href="https://play.google.com/store/apps/details?id=timo.home.gpsLog">GPS Logger</a> android apps.
+An Octave/Matlab + java script to visualise a GPS logged track on a Google map using the [Google Static Maps api](https://developers.google.com/maps/documentation/static-maps). I use it to visualise the logs I've recorded with my [Exercise Pacer](https://play.google.com/store/apps/details?id=timo.home.exercisepacer) and [GPS Logger](https://play.google.com/store/apps/details?id=timo.home.gpsLog) android apps.
 
 To use 
 
