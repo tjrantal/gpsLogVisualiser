@@ -1,0 +1,33 @@
+apply plugin: 'java'
+
+repositories {
+       mavenCentral()
+}
+
+configurations {
+    // configuration that holds jars to include in the jar
+    extraLibs
+}
+
+dependencies {
+	// https://mvnrepository.com/artifact/org.knowm.xchart/xchart
+	compile group: 'org.knowm.xchart', name: 'xchart', version: '3.5.0'
+	extraLibs group: 'org.knowm.xchart', name: 'xchart', version: '3.5.0'
+   configurations.compile.extendsFrom(configurations.extraLibs)
+}
+
+
+
+sourceCompatibility = 1.6
+version = '1.0'
+jar {
+	manifest {
+	  attributes	'Implementation-Title': 'Run analyser helper',
+		         	'Implementation-Version': version
+	}
+	from {
+		configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
+	}
+}
+
+

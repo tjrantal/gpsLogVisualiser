@@ -6,11 +6,14 @@ Obtain a google static maps api key, and save it to a file named 'mapsKey.txt' i
 Obtain a google elevations api key, and save it to a file named 'elevationsKey.txt' in the root folder of the project (i.e. the folder with visualiseGPS.m). Just follow the procedure outlined on the google elevations api webpage to obtain one.
 
 Compile the java classes (requires <a href="http://www.oracle.com/technetwork/java/javase/">java SDK</a> );
-	1) install and configure ANT (http://ant.apache.org/, remember to add JAVA_HOME and ANT_HOME environment variables)
-	2) open command prompt cd into the folder with this README and type ant on the command line  (+ hit enter)
-		 should create a jar file in java/build
-		check build.xml if things go wrong
+	1) Uses a gradle build -> install gradle (https://gradle.org/)
+	2) open command prompt cd into the folder with this README and type gradle jar on the command line  (+ hit enter)
+		 should create build/libs/runAnalyserHelper-1.0.jar
 
+
+Depends on octave-forge package image
+	install on octave command line with (will take a while to execute)
+		pkg install -forge image 
 
 Add some GPS log files into sampleData/gpsLog folder. I have included a sample file, which should show a route in the Melbourne Metropolitan area from Blackburn to Burwood. Will create a folder 'mapFigs' and save corresponding Google Static Maps as .png files.
 
