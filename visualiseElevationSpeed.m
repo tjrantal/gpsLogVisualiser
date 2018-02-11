@@ -1,21 +1,6 @@
-%Used latest stable Octave 4.2.1 from Octave repository
-%https://launchpad.net/~octave/+archive/ubuntu/stable
-%Depends on non-linear optimisation and ode solving
-%ODE
-%https://wiki.octave.org/Odepkg
-%At the writing of this file had to use developmental source
-% [fname, success] = urlwrite ("https://bitbucket.org/odepkg/odepkg/get/default.tar.gz", [P_tmpdir "/odepkg.tar.gz"]);
- %assert (success)
- %pkg ("install", fname)
-%Takes a fair while  but did work in Ubuntu 16.04 Octave version 4.2.1 on 2018/02/03
-%NON-LINEAR OPTIMISATION
-%Optim is not in the latest repo, install from forge - depends on liboctave-dev (to compile) 
-%sudo aptitude install liboctave-dev
-%On octave command line 
-%pkg install -forge struct optim
-%Takes a fair while but did work in Ubuntu 16.04 Octave version 4.2.1 on 2018/02/03
-
 %Run visualiseGPS first to fetch elevations into sampleData/googleElevations. 
+%Use this to look for a good epoch for friction evaluation. Needs several seconds of gliding downhill, 
+%and a change in velocity to evaluate air drag and friction
 
 fclose all;
 close all;
@@ -25,7 +10,7 @@ addpath('functions');
 addpath('functions/accAna');
 dataPath = 'sampleData/';
 sensorPaths = {'googleElevations','accLog'};
-gpsFile = 'GPS_2018-01-06_104612.txt';	%Look through visualisations to find interesting data
+gpsFile = 'GPS_2018-01-06_104612.txt';	%Change this manually
 interestingColumns ={{'tstamp','lat','lon','spee','elevations ['},{'tstamp','x [','y [','z ['}};	%Column headers for interesting columns of data
 eleFileName = getMatchingFile(gpsFile,[dataPath sensorPaths{1}]);
 accFileName = getMatchingFile(gpsFile,[dataPath sensorPaths{2}]);
@@ -63,7 +48,4 @@ subplot(3,1,3)
 plot((madStamps(madIndices)-commonTStamps(1))./(1000*60),mads(madIndices),'linewidth',3);
 ah(3) = gca();
 linkaxes(ah,'x');
-
-%Downhill at around 4 to 5 min. Looks good 4.12 4.7
-
 
