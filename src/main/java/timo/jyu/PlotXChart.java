@@ -30,6 +30,14 @@ public class PlotXChart{
 		chart.getStyler().setXAxisTickMarkSpacingHint(100);
 		chart.getStyler().setLegendVisible(false);
 	}
+
+	//Add series with a specified colour
+	public void addSeries(String seriesName, double[] xData, double[] yData,int colour){
+		XYSeries series = chart.addSeries(seriesName,xData,yData);
+		series.setMarker(SeriesMarkers.NONE);
+		series.setLineColor(new Color(colour));
+	}
+		
 	
 	public void addSeries(String seriesName, double[] xData, double[] yData){
 		XYSeries series = chart.addSeries(seriesName,xData,yData);

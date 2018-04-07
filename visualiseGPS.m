@@ -64,7 +64,7 @@ for file = {fList(:).name}
 					encodedString = [encodedString; {javaMethod('encode','timo.home.polyencode.PolyEncode',simplified(currentEpoch,1),simplified(currentEpoch,2))}];
 				end
 			else
-				encodedString = {javaMethod('encode','timo.home.polyencode.PolyEncode',simplified(:,1),simplified(:,2));}
+				encodedString = {javaMethod('encode','timo.home.polyencode.PolyEncode',simplified(:,1),simplified(:,2))};
 			end
 			%Send data off to Google static maps api, and get the static map as java BufferedImage
 			%urlwrite(['https://maps.googleapis.com/maps/api/staticmap?size=640x640&path=weight:3%7Ccolor:red%7Cenc:' encodedString '&key=' mapsKey],[savePath '/' strrep(file{1},'.txt','.png')]);
@@ -73,10 +73,7 @@ for file = {fList(:).name}
 			for e = 1:length(encodedString)
 				pathString = [pathString '&path=weight:3%7Ccolor:' colours{e} '%7Cenc:' encodedString{e}];
 			end
-			pathString = [pathString '&key=' mapsKey];
-			disp(pathString)
-			%keyboard;
-			mapString = urlread(pathString);
+			mapString = urlread([pathString '&key=' mapsKey]);
 			%Get the map as bufferedImage
 			iStream = javaObject('java.io.ByteArrayInputStream',typecast(mapString,'int8'));
 			mapBI = javaMethod('read','javax.imageio.ImageIO',iStream);
@@ -90,7 +87,21 @@ for file = {fList(:).name}
 
 			%Save a combined static map and elevations png
 			xChart = javaObject('timo.jyu.PlotXChart','Elevations from Google Elevations API','GPS Data Point Index','Elevation [m]',640,320);
-			xChart.addSeries('Elevation',1:length(elevations),elevations);
+			
+			%add elevations using colour slide
+			if size(simplified,1) > 20
+				encodedString = {};
+				inits = round([0:length(colours)]./length(colours).*length(elevations));
+				for cc = 1:length(colours)
+					currentEpoch = max([1 inits(cc)]):inits(cc+1);
+					xChart.addSeries(sprintf('Elevation%02d',cc),currentEpoch,elevations(currentEpoch),colourInts(cc));					
+				end
+			else
+				xChart.addSeries('Elevation',1:length(elevations),elevations);
+			end
+			
+			
+			
 			xChart.appendAndSavePNG([elevationsPath '/' strrep(file{1},'.txt','.png')],mapBI,true);
 			
 			%Write the elevations to a file
