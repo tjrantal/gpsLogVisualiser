@@ -19,14 +19,18 @@ addpath('functions');
 addpath('functions/simplify');
 javaaddpath('build/libs/runAnalyserHelper-1.0.jar');	%Java helper to interface with Google maps and elevations APIs. Saves png images as well to comply with Google Elevations API terms of service
 interestingColumns = {'lat','lon'};	%Column headers for latitude and longitude, respectively
-dataPath = 'sampleData/gpsLog';	%reads logged coordinate data from this path
-elevationsPath = 'elevationFigs';	%Saves google static map and elevations visualisation here
-elevationsSavePath = 'sampleData/googleElevations';	%Saves the google elevation to a text file here
+dataPath = 'sampleData/lainakannylta/gpsLog';	%reads logged coordinate data from this path
+elevationsPath = 'elevationFigsNew';	%Saves google static map and elevations visualisation here
+elevationsSavePath = 'sampleData/googleElevationsNew';	%Saves the google elevation to a text file here
 keyFile = 'mapsKey.txt';	%Google static maps API key in a text file
 elevationsKeyFile = 'elevationsKey.txt';	%Google elevations API key in a text file
 mapsKey = strtrim(fileread(keyFile));
 elevationsKey = strtrim(fileread(elevationsKeyFile));
 elevationRequest = javaObject('timo.home.elevations.ElevationRequest',elevationsKey);
+
+%Create hex colours for static maps here
+colourInts = javaMethod('getColourSlide','timo.home.utils.Utils',int32(0x000000FF),int32(0x00FF0000),10);
+colours = cellfun(@(x) ['0x' sprintf('%06x',x)], num2cell(colourInts),'uniformoutput',false);
 
 %Create folder for text files and figures if required
 if ~exist(elevationsPath,'dir')
@@ -52,12 +56,27 @@ for file = {fList(:).name}
 			[simplified, tIndices] = simplifyJava([data.data(:,columnIndices)], 1e-4);
 			
 			%Encode coordinates with polyencode
-			encodedString = javaMethod('encode','timo.home.polyencode.PolyEncode',simplified(:,1),simplified(:,2));
-
+			if size(simplified,1) > 20
+				encodedString = {};
+				inits = round([0:length(colours)]./length(colours).*size(simplified,1));
+				for cc = 1:length(colours)
+					currentEpoch = max([1 inits(cc)]):inits(cc+1);
+					encodedString = [encodedString; {javaMethod('encode','timo.home.polyencode.PolyEncode',simplified(currentEpoch,1),simplified(currentEpoch,2))}];
+				end
+			else
+				encodedString = {javaMethod('encode','timo.home.polyencode.PolyEncode',simplified(:,1),simplified(:,2));}
+			end
 			%Send data off to Google static maps api, and get the static map as java BufferedImage
 			%urlwrite(['https://maps.googleapis.com/maps/api/staticmap?size=640x640&path=weight:3%7Ccolor:red%7Cenc:' encodedString '&key=' mapsKey],[savePath '/' strrep(file{1},'.txt','.png')]);
-			mapString = urlread(['https://maps.googleapis.com/maps/api/staticmap?size=640x640&path=weight:3%7Ccolor:red%7Cenc:' encodedString '&key=' mapsKey]);
+			pathString = 'https://maps.googleapis.com/maps/api/staticmap?size=640x640';
 			
+			for e = 1:length(encodedString)
+				pathString = [pathString '&path=weight:3%7Ccolor:' colours{e} '%7Cenc:' encodedString{e}];
+			end
+			pathString = [pathString '&key=' mapsKey];
+			disp(pathString)
+			%keyboard;
+			mapString = urlread(pathString);
 			%Get the map as bufferedImage
 			iStream = javaObject('java.io.ByteArrayInputStream',typecast(mapString,'int8'));
 			mapBI = javaMethod('read','javax.imageio.ImageIO',iStream);
