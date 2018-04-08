@@ -31,6 +31,7 @@ elevationRequest = javaObject('timo.home.elevations.ElevationRequest',elevations
 %Create hex colours for static maps here
 colourInts = javaMethod('getColourSlide','timo.home.utils.Utils',int32(0x000000FF),int32(0x00FF0000),10);
 colours = cellfun(@(x) ['0x' sprintf('%06x',x)], num2cell(colourInts),'uniformoutput',false);
+colourIndices = [1:3:length(colours),2:3:length(colours),3:3:length(colours)]; %Scramble the colours 
 
 %Create folder for text files and figures if required
 if ~exist(elevationsPath,'dir')
@@ -55,6 +56,9 @@ for file = {fList(:).name}
 			%Simplify coordinates
 			[simplified, tIndices] = simplifyJava([data.data(:,columnIndices)], 1e-4);
 			
+			%Plot recorded coordinates instead of simplified
+			simplified = data.data(:,columnIndices);
+			
 			%Encode coordinates with polyencode
 			if size(simplified,1) > 20
 				encodedString = {};
@@ -71,7 +75,7 @@ for file = {fList(:).name}
 			pathString = 'https://maps.googleapis.com/maps/api/staticmap?size=640x640';
 			
 			for e = 1:length(encodedString)
-				pathString = [pathString '&path=weight:3%7Ccolor:' colours{e} '%7Cenc:' encodedString{e}];
+				pathString = [pathString '&path=weight:3%7Ccolor:' colours{colourIndices(e)} '%7Cenc:' encodedString{e}];
 			end
 			mapString = urlread([pathString '&key=' mapsKey]);
 			%Get the map as bufferedImage
@@ -94,7 +98,7 @@ for file = {fList(:).name}
 				inits = round([0:length(colours)]./length(colours).*length(elevations));
 				for cc = 1:length(colours)
 					currentEpoch = max([1 inits(cc)]):inits(cc+1);
-					xChart.addSeries(sprintf('Elevation%02d',cc),currentEpoch,elevations(currentEpoch),colourInts(cc));					
+					xChart.addSeries(sprintf('Elevation%02d',cc),currentEpoch,elevations(currentEpoch),colourInts(colourIndices(cc)));					
 				end
 			else
 				xChart.addSeries('Elevation',1:length(elevations),elevations);

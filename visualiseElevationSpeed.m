@@ -9,8 +9,10 @@ clc;
 addpath('functions');
 addpath('functions/accAna');
 dataPath = 'sampleData/';
-sensorPaths = {'googleElevations','accLog'};
-gpsFile = 'GPS_2018-01-06_104612.txt';	%Change this manually
+sensorPaths = {'googleElevationsNew','lainakannylta/accLog'};
+%gpsFile = 'GPS_2018-01-06_104612.txt';	%Change this manually
+gpsFile = 'GPS_2018-04-02_093842.txt';	%Change this manually
+
 interestingColumns ={{'tstamp','lat','lon','spee','elevations ['},{'tstamp','x [','y [','z ['}};	%Column headers for interesting columns of data
 eleFileName = getMatchingFile(gpsFile,[dataPath sensorPaths{1}]);
 accFileName = getMatchingFile(gpsFile,[dataPath sensorPaths{2}]);
