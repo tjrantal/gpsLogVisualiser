@@ -1,0 +1,9 @@
+Run visualiseGPS to visualise GPS-files, and to fetch corresponding elevations from google maps elevations api.
+	Skiing in file lainakanny
+		GPS_2018-04-02_093842.png
+
+Pop the interesting file into extractTStamps.m, and inspect the data visually to identify the intersting bit for friction extraction (downhill for several seconds, no pyhsical acceleration or deceleration)
+	Copy the information from command line to interestingEpoch.txt
+	
+Run model to optimise coefficient of rolling/sliding resistance, and coefficient of drag
+	Evaluate physical work done based on the optimised rolling/sliding resistance and coefficient of drag
