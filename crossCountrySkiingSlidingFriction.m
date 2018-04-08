@@ -27,12 +27,15 @@ clc;
 addpath('functions');
 addpath('functions/accAna');
 addpath('functions/haversine');
+addpath('functions/ode');
 
-epochInfo = readLog('interstingEpoch.txt','\t',2);
-epochStamps = cellfun(@str2num, epochInfo.header(2).line(2:3));
-eleFileName = epochInfo.header(2).line{1};
+epochInfo = readLog('interstingEpoch.txt','\t',3);	%Read all lines as header lines
+lineOfInterest = 3;	%Which line in the interestingEpoch file to model
+epochStamps = cellfun(@str2num, epochInfo.header(lineOfInterest).line(2:3));
+eleFileName = epochInfo.header(lineOfInterest).line{1};
 
-dataPath = 'sampleData/googleElevations';
+%dataPath = 'sampleData/googleElevations';
+dataPath = 'sampleData/googleElevationsNew';
 interestingColumns ={{'tstamp','lat','lon','spee','elevations ['},{'tstamp','x [','y [','z ['}};	%Column headers for interesting columns of data
 
 %Read data
@@ -82,9 +85,32 @@ subplot(2,1,1);
 plot(drop,'linewidth',3);
 subplot(2,1,2);
 plot(distanceVel,'linewidth',3);
+hold on
+plot(distance,'linewidth',3);
 slopeAngle = asin(drop./distanceVel);
+slopeAngle2 = asin(drop./distance);
 figure
 plot(slopeAngle/pi*180,'linewidth',3);
+hold on;
+plot(slopeAngle2/pi*180,'linewidth',3);
 
+%Use distance-based slope, which is slopeAngle2
+%Model velocity against measured velocity
+global constants
+constants =struct();
+constants.position = distance;	%Used to get slope in ODE integral
+constants.slope = slopeAngle2;	%Used to get slope in ODE integral
+constants.m = 93; %kg mass of the object
+constants.A = 1.3*0.5;	%Cross-sectional area of the object m squared (crouched person)
+constants.rho = 1.177;	%kg/m3 Air density 
+constants.g = -9.81;	%m/s2 gravitational acceleration
+constants.u = 0.02;
+constants.Cd = 1.0;	%Guess base on cyclists https://www.cyclingpowerlab.com/CyclingAerodynamics.aspx
+constants.time = (eleStamps(eleIndices)-eleStamps(eleIndices(1)))./(1000);
 
+initVel = eleData.data(eleIndices(1),eleColumnIndices(4));
+evalInstants = [0:0.1:30];
+[evalInstants, modelPosition]= ode45(@(t,y) positionDiffWithAir(t,y,constants),evalInstants,[initVel; 0;]);
+figure
+plot(evalInstants,modelPosition(:,1),'linewidth',3)
 
