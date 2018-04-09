@@ -24,6 +24,8 @@ fclose all;
 close all;
 clear all;
 clc;
+pkg load signal
+
 addpath('functions');
 addpath('functions/accAna');
 addpath('functions/haversine');
@@ -68,38 +70,86 @@ plot(eleData.data(eleIndices,eleColumnIndices(2)),eleData.data(eleIndices,eleCol
 
 %Plot distance
 distance = calcDistance(eleData.data(eleIndices,eleColumnIndices(2)),eleData.data(eleIndices,eleColumnIndices(3)));
+
+%Filter distance
+[b,a] = butter(2,0.2/0.5);
+distanceSmooth = filtfilt(b,a,distance);
+
+
+
 distanceVel = eleData.data(eleIndices(2:end),eleColumnIndices(4)).*diff((eleStamps(eleIndices)-eleStamps(eleIndices(1)))./(1000));
 
+dposition =cumtrapz(distance);
+dsposition = cumtrapz(distanceSmooth);
+velposition =cumtrapz(distanceVel);
+
+
 figure
-
-
+plot(dposition,'linewidth',3);
+hold on;
+plot(velposition,'linewidth',3,'r');
+plot(dposition,'linewidth',3,'g');
+title('Position')
+figure
 plot(distance,'linewidth',3);
 hold on;
 plot(distanceVel,'linewidth',3,'r');
+plot(distanceSmooth,'linewidth',3,'g');
+title('diffPosition')
+%keyboard;
+
+heightSmooth = filtfilt(b,a,eleData.data(eleIndices,eleColumnIndices(5)));
+
+figure
+plot(eleData.data(eleIndices,eleColumnIndices(5)),'linewidth',3);
+hold on;
+plot(heightSmooth,'linewidth',3,'g');
+title('heightData');
+
+figure
+plot(diff(eleData.data(eleIndices,eleColumnIndices(5))),'linewidth',3);
+hold on;
+plot(diff(heightSmooth),'linewidth',3,'g');
+title('diffHeightData');
 
 %Calc slope profile based on velocity and elevation change
 drop = diff(eleData.data(eleIndices,eleColumnIndices(5)));
+dropSmooth = diff(heightSmooth);
 distanceVel = eleData.data(eleIndices(1:end-1),eleColumnIndices(4)).*diff(eleStamps(eleIndices-1)./1000);
 figure
 subplot(2,1,1);
 plot(drop,'linewidth',3);
+hold on
+plot(dropSmooth,'linewidth',3,'g');
+title('Drop');
 subplot(2,1,2);
 plot(distanceVel,'linewidth',3);
 hold on
 plot(distance,'linewidth',3);
+plot(distanceSmooth,'linewidth',3,'g');
 slopeAngle = asin(drop./distanceVel);
 slopeAngle2 = asin(drop./distance);
+slopeAngleSmooth = asin(dropSmooth./distanceSmooth);
+
 figure
 plot(slopeAngle/pi*180,'linewidth',3);
 hold on;
 plot(slopeAngle2/pi*180,'linewidth',3);
+plot(slopeAngleSmooth/pi*180,'linewidth',3,'g');
+title('slopeAngle');
+
+
+%[b,a] = butter(2,0.2/0.5);
+%slopeAngleSmooth = filtfilt(b,a,slopeAngle2);
+%plot(slopeAngleSmooth/pi*180,'linewidth',3,'g');
+%keyboard;
 
 %Use distance-based slope, which is slopeAngle2
 %Model velocity against measured velocity
 global constants
 constants =struct();
-constants.position = distance;	%Used to get slope in ODE integral
-constants.slope = slopeAngle2;	%Used to get slope in ODE integral
+constants.position = dsposition;	%Used to get slope in ODE integral
+constants.slope = slopeAngleSmooth;	%Used to get slope in ODE integral
 constants.m = 93; %kg mass of the object
 constants.A = 1.3*0.5;	%Cross-sectional area of the object m squared (crouched person)
 constants.rho = 1.177;	%kg/m3 Air density 
@@ -108,9 +158,24 @@ constants.u = 0.02;
 constants.Cd = 1.0;	%Guess base on cyclists https://www.cyclingpowerlab.com/CyclingAerodynamics.aspx
 constants.time = (eleStamps(eleIndices)-eleStamps(eleIndices(1)))./(1000);
 
-initVel = eleData.data(eleIndices(1),eleColumnIndices(4));
+%initVel = eleData.data(eleIndices(1),eleColumnIndices(4));
+initVel = distanceSmooth(1);
 evalInstants = [0:0.1:30];
 [evalInstants, modelPosition]= ode45(@(t,y) positionDiffWithAir(t,y,constants),evalInstants,[initVel; 0;]);
+
+%opt = odeset ("InitialStep", 0.001, "MaxStep", 0.1);
+%[evalInstants, modelPosition]= ode45(@(t,y) positionDiffWithAir(t,y,constants),evalInstants,[initVel; 0;],opt);
+
+%lsode_options('integration method','stiff');
+%[modelPosition]= lsode(@(y,t) lsOdeTest(y,t),[initVel; 0;],evalInstants);
+
 figure
+subplot(2,1,1)
+plot(evalInstants,interp1([1:length(distanceVel)]-1,distanceSmooth,evalInstants),'k','linewidth',3)
+hold on;
 plot(evalInstants,modelPosition(:,1),'linewidth',3)
+subplot(2,1,2)
+plot(evalInstants,interp1([1:length(velposition)]-1,dsposition,evalInstants),'k','linewidth',3)
+hold on;
+plot(evalInstants,modelPosition(:,2),'linewidth',3)
 

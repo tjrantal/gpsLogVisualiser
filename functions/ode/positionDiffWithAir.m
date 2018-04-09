@@ -18,7 +18,7 @@ function dydt = positionDiffWithAir(t,y,constants)
 	%sliding friction
 	au = supportAcc(1)*constants.u;	%Will be negative as g = -9.81
 	
-	disp(sprintf('drag %.2f support %.2f friction %.2f',aDrag,supportAcc(2),au));
+	%disp(sprintf('drag %.2f support %.2f friction %.2f',aDrag,supportAcc(2),au));
 	
 	dydt = [aDrag+supportAcc(2)+au; ... %accelerations, only x considered..
 				y(1)]; %velocities
