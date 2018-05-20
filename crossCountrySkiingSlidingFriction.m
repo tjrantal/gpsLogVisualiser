@@ -63,11 +63,13 @@ heightSmooth = filtfilt(b,a,eleData.data(:,eleColumnIndices(5)));
 
 dropSmooth = diff(heightSmooth);
 
-%slopeAngleSmoothVel = zeros(size(dropSmooth,1),size(dropSmooth,2));
-%slopeIndices = find(distanceSmoothVel > eps);
-%slopeAngleSmoothVel(slopeIndices) = atan(dropSmooth(slopeIndices)./distanceSmoothVel(slopeIndices));
 
-slopeAngleSmoothVel = atan2(dropSmooth,distanceSmoothVel);
+%slopeAngleSmoothVel = atan2(dropSmooth,distanceSmoothVel);
+
+slopeAngleSmoothVel = zeros(size(dropSmooth,1),size(dropSmooth,2));
+slopeIndices = find(distanceSmoothVel > eps);
+slopeAngleSmoothVel(slopeIndices) = atan(dropSmooth(slopeIndices)./distanceSmoothVel(slopeIndices));
+
 
 if 1
 	%DEBUGGING
@@ -77,6 +79,40 @@ if 1
 	cellAcc = cellfun(@(x) getSupportAcc(x),num2cell(slopeAngleSmoothVel),'uniformoutput',false);
 	
 	hAcc = cellfun(@(x) x(2),cellAcc,'uniformoutput',true);
+
+	figure
+	ah = [];
+	subplot(3,1,1)
+	plot(heightSmooth,'linewidth',3);
+	ah(1) = gca();
+	subplot(3,1,2)
+	plot(dropSmooth,'linewidth',3);
+	ah(2) = gca();
+	subplot(3,1,3)
+	plot(asin(diff(smoothVel)./9.81)/pi*180,'linewidth',3);
+	hold on;
+	ah(3) = gca();
+	plot(slopeAngleSmoothVel/pi*180,'r','linewidth',3);
+	linkaxes(ah,'x');
+	keyboard;
+
+
+	
+	figure
+	ah = [];
+	subplot(3,1,1)
+	plot(smoothVel,'linewidth',3);
+	ah(1) = gca();
+	subplot(3,1,2)
+	plot(diff(smoothVel),'linewidth',3);
+	ah(2) = gca();
+	subplot(3,1,3)
+	plot(asin(diff(smoothVel)./9.81)/pi*180,'linewidth',3);
+	hold on;
+	ah(3) = gca();
+	plot(slopeAngleSmoothVel/pi*180,'r','linewidth',3);
+	linkaxes(ah,'x');
+	keyboard;
 	
 	
 	figure
